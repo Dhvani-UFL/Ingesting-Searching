@@ -103,5 +103,21 @@ public class RecommendationTest {
         }
     }
 
+    @Test
+    public void testingmethod6()
+    {
+    	Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/MJ/Beat it.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
 }
