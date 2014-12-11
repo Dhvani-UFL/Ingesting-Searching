@@ -16,12 +16,13 @@ public class SearchFP
 {
 	 private static String driverName = "org.apache.hive.jdbc.HiveDriver";
 	 
+	 String finalSongData;
 	  /**
 	   * @param args
 	   * @throws SQLException
 	   */
 	 
-	 public static void searchFPrint(String codeStr) throws SQLException
+	 public String searchFPrint(String codeStr) throws SQLException
 	 {
 		 
 		 //Store the code string passed as parameter
@@ -36,7 +37,11 @@ public class SearchFP
 	    }
 	      
 	      // setting the connection to hive2 server
-	      Connection connection = DriverManager.getConnection("jdbc:hive2://localhost:10000/default", "DhvaniUser1", "");
+	      
+	      String server = "localhost";
+	      String port = "10000";
+	      
+	      Connection connection = DriverManager.getConnection("jdbc:hive2://"+ server+":"+port +"/default", "DhvaniUser1", "");
 	      Statement stmt = connection.createStatement();
 	      String dbTableName = "HiveDhvaniHashCodeTable";
 	      
@@ -45,10 +50,10 @@ public class SearchFP
 	      
 	      //create external reference Hive table to refer data from DynamoDB
 	      stmt.execute("create external table " + dbTableName + " (HiveHashKey int, HiveTracksArray ArrayList<String>, "+
-	       "HiveTimeArray ArrayList<int>)" ); //+
-	     // " Stored by 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'" +
-	      //"TBLPROPERTIES (" + '"' + "dynamodb.table.name" + '" =' + ""DhvaniHashCodeTable", "dynamodb.column.mapping" " " +
-	     // 		" = " HiveHashKey: HashKey, HiveTracksArray: tracksArray, HiveTimeArray:timeArray" )";
+	       "HiveTimeArray ArrayList<int>)" +
+	      " Stored by 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'" +
+	      "TBLPROPERTIES (" + '"' + "dynamodb.table.name" + '" =' + ""DhvaniHashCodeTable", "dynamodb.column.mapping" " " +
+	      		+" = " HiveHashKey: HashKey, HiveTracksArray: tracksArray, HiveTimeArray:timeArray" )";
 	      
 	      String sql = "show tables '" + dbTableName + "'";
 	      System.out.println("Running: " + sql);
@@ -122,6 +127,9 @@ public class SearchFP
 	    	  
 	    	  Iterator timeIterate = matTimeArray.iterator();
 	    	  
+	    	  
+	    	  // build a histogram of time differences for matched hash keys
+	    	  
 	    	  while(timeIterate.hasNext())
 	    	  {
 	    		   timeDiff =(int) timeIterate.next() - qryTimeArray.get(index);
@@ -137,15 +145,23 @@ public class SearchFP
 	      
 	      //Collections.sort(timeDiffHist,Collections.reverseOrder());
 	     
+	      //identify the top 2 histogram time offset values
 	      
 	      int highest = Integer.MIN_VALUE+1; 
 	      int sec_highest = Integer.MIN_VALUE;
-	      for(int i : timeDiffHist) //b is array of integers
+	      
+	    //timeDiffHist is array of integers
+	      
+	      for(int i : timeDiffHist) 
 	      {
 	          if(i>highest)
 	          {
-	             sec_highest = highest; //make current highest to second highest
-	             highest = i; //make current value to highest
+	             
+	        	//make current highest to second highest
+	        	  sec_highest = highest; 
+	             
+	        	//make current value to highest
+	        	  highest = i; 
 	          }
 	          else if(i>sec_highest) 
 	          {
@@ -153,7 +169,16 @@ public class SearchFP
 	          }
 	      }
 	     
-	      int highTimeDiff= timeDiffArr.get(timeDiffHist.indexOf(highest));
+	      
+	      //check if there is a significant difference between the top 2 histogram values.
+	      
+	      if((highest - sec_highest) > (highest/2))
+	      {
+	    	//select the top time difference value
+	    	  int highTimeDiff= timeDiffArr.get(timeDiffHist.indexOf(highest));
+	      
+	      
+	      
 	      
 	      ArrayList<String> listTrackName = new ArrayList<String>(); 
 	      ArrayList<Integer> listTrackCount= new ArrayList<Integer>();
@@ -182,23 +207,87 @@ public class SearchFP
 	    		  
 	    	  }
 	    	  
-	    	  int highest2 = Integer.MIN_VALUE+1; 
-		      int sec_highest2 = Integer.MIN_VALUE;
-		      for(int i : listTrackCount) //b is array of integers
-		      {
-		          if(i>highest2)
-		          {
-		             sec_highest2 = highest2; //make current highest to second highest
-		             highest2 = i; //make current value to highest
-		          }
-		          else if(i>sec_highest2) 
-		          {
-		             sec_highest2 = i;
-		          }
-		      }
-	    	  
+	    	  	    	  
 	      }
 	      
+	      int highest2 = Integer.MIN_VALUE+1; 
+	      int sec_highest2 = Integer.MIN_VALUE;
+	      
+	    //listTrackCount is array of count of song matches.
+	      
+	      for(int i : listTrackCount) 
+	      {
+	          if(i>highest2)
+	          {
+	             
+	        	//make current highest to second highest
+	        	  sec_highest2 = highest2; 
+	        	  
+	        	  //make current value to highest
+	             highest2 = i;
+	          }
+	          else if(i>sec_highest2) 
+	          {
+	             sec_highest2 = i;
+	          }
+	      }
+	    
+	      //identify the top song with highest matches
+	      
+	      String finalMatchingTrack= listTrackName.get(listTrackCount.indexOf(highest2));
+	      
+	      // call the getMetadata method to retrieve the meta data
+	      finalSongData = getMetadata (finalMatchingTrack);
+	      }
+	      
+	      
+	      // if no proper histogram difference, it means song not found
+	      
+	      else
+	      {
+	    	  finalSongData = " ";
+	      }
+	      // retrieve the metadata of the identified song
+	      
+	      
+	      return finalSongData;
 
+	 }
+	 
+	 public String getMetadata(String SongName)
+	 {
+		 //create reference table for metadata table
+	      
+	      String metaDataTable = "HiveDhvaniSongsTable";
+	      stmt.execute("drop table if exists " + metaDataTable);
+	      
+	      stmt.execute("create external table " + metaDataTable + " (HiveTrackId String, HiveTrackLength int, "+
+	   	       "HiveArtist String,HiveTitle String, HiveRelease String )" +
+	   	      " Stored by 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'" +
+	   	      "TBLPROPERTIES (" + '"' + "dynamodb.table.name" + '" =' + ""DhvaniSongsTable", "dynamodb.column.mapping" " " +
+	   	      		+" = " HiveTrackId: TrackId, HiveTrackLength: TrackLength, HiveArtist:Artist, +
+	   	      		HiveTitle: Title, HiveRelease:Release" )";
+	   	      
+	      // search for meta data in the database
+	      
+	      String SelectSQL = "Select HiveTrackId, HiveTrackLength, HiveArtist,HiveTitle, HiveRelease   from  " + metaDataTable + 
+	    		  " Where HiveTitle =" +  SongName +" limit 1" ;
+	      
+	      ResultSet qryResult3 = stmt.executeQuery(SelectSQL);
+	      
+	      //extract the metadata from the query result
+	      while(qryResult3.next())
+	      {
+	    	  String trackID = qryResult3.getString("HiveTrackId");
+	    	  int TrackLength = qryResult3.getInt("HiveTrackLength");
+	    	  String Artist = qryResult3.getString("HiveArtist");
+	    	  String Title = qryResult3.getString("HiveTitle");
+	    	  String Release = qryResult3.getString("HiveRelease");
+	    	  	    	  
+	      }
+	      
+	      //concatenate the metadata into a predefined format
+	      String metaData = Title + ":" + Artist+ ":"+ trackID +":" + TrackLength +":" + Release ;
+	      return metaData;
 	 }
 }

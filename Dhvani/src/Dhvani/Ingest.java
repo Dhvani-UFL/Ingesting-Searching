@@ -73,7 +73,7 @@ public class Ingest {
     }
 
 
-    public static void main(String[] args) throws Exception 
+    public static void ingestFP(String[] args) throws Exception 
     {
         init();
         
@@ -92,7 +92,38 @@ public class Ingest {
         JSONArray songList = (JSONArray) parser.parse(new FileReader(args[0]));
         
         for (Object songObject : songList)
-                
+        {
+          JSONObject song = (JSONObject) songObject;
+
+          code = (String) song.get("code");
+          System.out.println(code);
+
+
+          JSONArray metadata = (JSONArray) jsonObject.get("metadata");
+        
+          for (Object metaObject: metadata)
+          {
+        	  track_id = metaObject.get("track_id");
+        	  
+        	  length = metaObject.get("duration");
+        	  version = metaObject.get("version");
+        	  
+        	  artist = "none";
+        	  artist = metaObject.get("artist");
+        	  
+        	  title = "none";
+        	  title = metaObject.get("title");
+        	  
+        	  release = "none";
+        	  release = metaObject.get("release");
+        	  
+        	  
+          }
+          
+          // For each song, call the insert method
+          putItemIntoTable(code, track_id, length, version, artist, title, release);
+        }
+        
 
 
         try {
@@ -103,7 +134,7 @@ public class Ingest {
             TableDescription tableDescription = dynamoDB.describeTable(describeTableRequest).getTable();
             System.out.println("Table Description: " + tableDescription);
 
-          //syso...
+          
 
             // Scan database for presence of these fingerprints
             HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
@@ -177,6 +208,14 @@ public class Ingest {
         //Set table name to the hash code table
         tableName = "DhvaniHashCodeTable";
         
+        //check if the fingerprint already exists
+        String checkSong = new SearchFP().searchFPrint(code);
+        
+        //if the fingerprint already exists, the method returns the song details, else it is blank
+        
+        if(checkSong != " ")
+        {
+        
 		StringTokenizer hashKeyToken = new StringTokenizer(code,",");
 		        
 		        while(hashKeyToken.hasMoreTokens())
@@ -201,7 +240,11 @@ public class Ingest {
 		                System.out.println("Result: " + putHashResult);
 		        	}
 
+		        }
+        }
     }
+    
+        
     private static void waitForTableToBecomeAvailable(String tableName) {
         System.out.println("Waiting for " + tableName + " to become ACTIVE...");
 
