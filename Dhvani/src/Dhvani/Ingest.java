@@ -103,7 +103,7 @@ public class Ingest {
             TableDescription tableDescription = dynamoDB.describeTable(describeTableRequest).getTable();
             System.out.println("Table Description: " + tableDescription);
 
-          
+          //syso...
 
             // Scan database for presence of these fingerprints
             HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
