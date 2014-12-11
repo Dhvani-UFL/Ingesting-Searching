@@ -151,4 +151,20 @@ public class RecommendationTest {
         }
     }
 
+    @Test
+    public void testingmethod9()
+    {
+        Recommendation mywrapper = new Recommedation();
+        
+        String filepath = "E:/Songs/Shakira/Hips dont lie.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 }
