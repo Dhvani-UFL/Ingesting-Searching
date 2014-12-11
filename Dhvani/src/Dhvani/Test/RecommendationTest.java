@@ -54,6 +54,54 @@ public class RecommendationTest {
             e.printStackTrace();
         }
     }
+    
+    @Test
+    public void testingmethod3()
+    {
+    	Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/Taylor Swift/love.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testingmethod4()
+    {
+    	Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/Taylor Swift/You belong with me.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testingmethod5()
+    {
+        Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/MJ/They don't care about us.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
 
 }
