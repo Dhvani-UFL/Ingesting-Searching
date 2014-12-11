@@ -53,7 +53,7 @@ public class SearchFP
 	       "HiveTimeArray ArrayList<int>)" +
 	      " Stored by 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'" +
 	      "TBLPROPERTIES (" + '"' + "dynamodb.table.name" + '" =' + ""DhvaniHashCodeTable", "dynamodb.column.mapping" " " +
-	      		+" = " HiveHashKey: HashKey, HiveTracksArray: tracksArray, HiveTimeArray:timeArray" )";
+	      		+" = " HiveHashKey: HashKey, HiveTracksArray: tracksArray, HiveTimeArray:timeArray" )" ";
 	      
 	      String sql = "show tables '" + dbTableName + "'";
 	      System.out.println("Running: " + sql);
@@ -266,7 +266,7 @@ public class SearchFP
 	   	      " Stored by 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'" +
 	   	      "TBLPROPERTIES (" + '"' + "dynamodb.table.name" + '" =' + ""DhvaniSongsTable", "dynamodb.column.mapping" " " +
 	   	      		+" = " HiveTrackId: TrackId, HiveTrackLength: TrackLength, HiveArtist:Artist, +
-	   	      		HiveTitle: Title, HiveRelease:Release" )";
+	   	      		HiveTitle: Title, HiveRelease:Release" )" ";
 	   	      
 	      // search for meta data in the database
 	      
