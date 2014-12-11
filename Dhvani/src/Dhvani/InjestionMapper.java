@@ -76,7 +76,7 @@ public class InjestionMapper extends MapReduceBase implements Mapper<FileInputFo
 		        	e.printStackTrace();
 		        }
 		        
-	    output.collect(fileLocation, new IntWritable(1));
+	    output.collect(fileLocation, fileLocation);
 	    	  
 	} 
 
