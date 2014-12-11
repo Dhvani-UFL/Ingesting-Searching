@@ -15,13 +15,28 @@ public class InjestionReducer extends MapReduceBase implements Reducer<Text, Int
           
         String fileLocation = " ";
         
+        String errorMessage = "File Location Not Found";
+        
         //To get file location value 
+        
         if(values.hasNext()) {
            fileLocation = values.next.get();
           }
         
+        //Store file in String array
+        
+        String[] file;
+        file[0] = fileLocation;
+        
+        
         //Trigger ingestion on each song thus obtained
-        ingestFP(fileLocation);
+        
+        try{
+        	Ingest.ingestFP(file);
+        }
+        catch(NullPointerException e){
+        	System.out.println("Error Message:    " + errorMessage);
+        }
         
         output.collect(key, new Text(fileLocation));
         
