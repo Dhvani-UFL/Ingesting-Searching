@@ -167,4 +167,23 @@ public class RecommendationTest {
         }
     }
 
+    
+    @Test
+    public void testingmethod10()
+    {
+    	Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/NickelBack/Someday.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        
+    }
+    
+
 }
