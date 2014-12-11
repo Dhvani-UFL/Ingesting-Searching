@@ -88,6 +88,14 @@ public class Recommendation
 	        		qrySongId = qryPlaylistArray + ", (" + SongId + ")" ;
 	        	}
 	        }
+	        
+	        String SelectSQL = "Select HiveUserId, HiveSongId from  " + dbTableName + 
+		    		  " Where HiveHashKey in " +  qrySongId ;
+		      
+		      ResultSet qryResult1 = stmt.executeQuery(SelectSQL);
+		      ResultSet qryResult2 = qryResult1;
+		      
+		      return qryResult2;
 	      
 	 }
 }
