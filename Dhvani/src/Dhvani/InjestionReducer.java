@@ -35,6 +35,7 @@ public class InjestionReducer extends MapReduceBase implements Reducer<Text, Int
         	Ingest.ingestFP(file);
         }
         catch(NullPointerException e){
+        	e.printStackTrace();
         	System.out.println("Error Message:    " + errorMessage);
         }
         
