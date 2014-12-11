@@ -61,33 +61,6 @@ public class Recommendation
 	        System.out.println(rset.getString(1));
 	        
 	      }
-	      //create table for queried audio hash keys
-	      
-	      String QueryHashTable = "HiveUserTable";
-	      stmt.execute("drop table if exists " + HiveUserTable);
-	      stmt.execute("create table " + HiveUserTable + " (UserId int, qryTime int)");
-	      
-	      String qryHashStamp = null;
-	      String qryHashkey = "(";
-	      
-	      ArrayList<Integer> qryTimeArray = new ArrayList<Integer>();
-	      ArrayList<Integer> qryPlaylistArray = new ArrayList<Integer>();
-	      
-	      StringTokenizer playlist = new StringTokenizer(codeString,",");
-	        
-	        while(qryHashToken.hasMoreTokens())
-	        {
-	        	String playlist = qryHashToken.nextToken();
-	        	StringTokenizer playlistString = new StringTokenizer(qryHashKey,":");
-	        	
-	        	if(playlistString.hasMoreTokens())
-	        	{
-	        	
-	        		int SongId = Integer.parseInt(playlistString.nextToken());
-	        		
-	        		qrySongId = qryPlaylistArray + ", (" + SongId + ")" ;
-	        	}
-	        }
 	        
 	        String SelectSQL = "Select HiveUserId, HiveSongId from  " + dbTableName + 
 		    		  " Where HiveHashKey in " +  qrySongId ;
@@ -96,6 +69,23 @@ public class Recommendation
 		      ResultSet qryResult2 = qryResult1;
 		      
 		      return qryResult2;
-	      
-	 }
+		      
+		      // search for hash Keys in the database
+	          
+	          String SelectSQL = "Select Genre from  " + dbTableName + 
+	                  " Where TrackArray is " + Tab2.playlist.TrackArray  ;
+	          
+	          ResultSet qryResult1 = stmt.executeQuery(SelectSQL);
+	          ResultSet qryResult2 = qryResult1;
+	          // Here, qryresult2 gives us the genre
+
+	        String SelectSQL = "Select TrackArray from "dbTableName + 
+	                "Where genre is " + qryresult.getData();
+
+	        ResultSet qryResult3 = stmt.executeQuery(SelectSQL);
+	        ArrayList<String> RecommendationList = new ArrayList<String>();
+	        RecommendationList = qryResult3.getArray("HiveTracksArray");
+          
+    
+}	      	 
 }
