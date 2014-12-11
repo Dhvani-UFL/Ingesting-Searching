@@ -135,4 +135,20 @@ public class RecommendationTest {
         }
     }
 
+    @Test
+    public void testingmethod8()
+    {
+        Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/Shakira/Whenever.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 }
