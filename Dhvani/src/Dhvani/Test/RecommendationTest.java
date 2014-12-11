@@ -119,5 +119,20 @@ public class RecommendationTest {
         }
     }
 
+    @Test
+    public void testingmethod7()
+    {
+    	Recommendation mywrapper = new Recommendation();
+        
+        String filepath = "E:/Songs/Fray/Backwards.mp3";
+        try
+        {
+            mywrapper.RecommendSong(filepath);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
 
 }
